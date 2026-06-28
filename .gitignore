@@ -1,0 +1,32 @@
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+npm-debug.*
+yarn-error.*
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+ios/
+android/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Appwrite function deps
+appwrite/functions/**/node_modules/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

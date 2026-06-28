@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Mentora",
+    "slug": "mentora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "mentora",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0E7C7B"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mentora.app"
+    },
+    "android": {
+      "package": "com.mentora.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0E7C7B"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Mentora needs access to your photos so you can attach images or video to a question.",
+          "cameraPermission": "Mentora needs camera access so you can record a video question.",
+          "microphonePermission": "Mentora needs microphone access so you can record an audio question."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "appwriteEndpoint": "https://fra.cloud.appwrite.io/v1",
+      "appwriteProjectId": "REPLACE_WITH_PROJECT_ID",
+      "appwritePlatform": "com.mentora.app"
+    }
+  }
+}

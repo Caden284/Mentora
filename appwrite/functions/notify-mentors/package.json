@@ -1,0 +1,10 @@
+{
+  "name": "notify-mentors",
+  "version": "1.0.0",
+  "description": "Appwrite Function: on a new Mentora question, notify available mentors.",
+  "type": "module",
+  "main": "src/main.js",
+  "dependencies": {
+    "node-appwrite": "^17.0.0"
+  }
+}

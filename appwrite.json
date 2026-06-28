@@ -1,0 +1,19 @@
+{
+  "projectId": "REPLACE_WITH_PROJECT_ID",
+  "projectName": "Mentora",
+  "functions": [
+    {
+      "$id": "notify-mentors",
+      "name": "notify-mentors",
+      "runtime": "node-18.0",
+      "entrypoint": "src/main.js",
+      "commands": "npm install",
+      "path": "appwrite/functions/notify-mentors",
+      "events": [
+        "databases.*.collections.questions.documents.*.create"
+      ],
+      "scopes": ["databases.read", "databases.write"],
+      "execute": ["any"]
+    }
+  ]
+}
