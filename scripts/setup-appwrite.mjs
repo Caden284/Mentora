@@ -22,8 +22,11 @@ import {
   Permission,
   Role,
   ID,
-  IndexType,
 } from 'node-appwrite';
+
+// Index types as plain strings so this works across all node-appwrite versions
+// (the IndexType enum export changed between major versions).
+const IndexType = { Key: 'key', Fulltext: 'fulltext', Unique: 'unique' };
 
 const endpoint = process.env.APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
 const projectId = process.env.APPWRITE_PROJECT_ID;
@@ -39,20 +42,48 @@ const db = new Databases(client);
 const storage = new Storage(client);
 
 const DB = 'mentora';
-const ok = async (label, fn) => {
-  try {
-    await fn();
-    console.log('  ✓', label);
-  } catch (e) {
-    if (e.code === 409) console.log('  · exists:', label);
-    else throw e;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Runs a step, treating "already exists" (409) as success. Attributes in
+// Appwrite are created asynchronously, so indexes that depend on them can fail
+// with "not yet available" — we retry those a few times with a wait.
+const ok = async (label, fn, attempts = 25) => {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await fn();
+      console.log('  ✓', label);
+      return;
+    } catch (e) {
+      if (e.code === 409) {
+        console.log('  · exists:', label);
+        return;
+      }
+      const status = e.code || e.response?.status || 0;
+      const retryable =
+        /not yet available|try again|being processed|timeout|first byte|bad gateway|service unavailable|ECONNRESET|ETIMEDOUT/i.test(
+          e.message || '',
+        ) ||
+        (status >= 500 && status < 600);
+      if (retryable && i < attempts - 1) {
+        await sleep(2500);
+        continue;
+      }
+      throw e;
+    }
   }
 };
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
   console.log('Database');
-  await ok('database mentora', () => db.create(DB, 'Mentora'));
+  // Free plan allows only 1 database. If "mentora" already exists (e.g. from a
+  // previous run), reuse it instead of trying to create another.
+  await ok('database mentora', async () => {
+    try {
+      await db.get(DB);
+    } catch {
+      await db.create(DB, 'Mentora');
+    }
+  });
 
   const rwUsers = [
     Permission.read(Role.any()),
@@ -130,7 +161,7 @@ async function main() {
       [Permission.read(Role.any()), Permission.create(Role.users())],
       false,
       true,
-      50 * 1024 * 1024,
+      50000000,
       ['m4a', 'mp3', 'wav', 'mp4', 'mov'],
     ),
   );
